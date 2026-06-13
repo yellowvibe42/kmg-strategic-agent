@@ -1,0 +1,12 @@
+requests
+beautifulsoup4
+feedparser
+lxml
+pandas
+numpy
+anthropic
+python-docx
+python-pptx
+openpyxl
+apscheduler
+python-telegram-bot

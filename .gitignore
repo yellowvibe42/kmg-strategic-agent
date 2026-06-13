@@ -1,0 +1,7 @@
+config.json
+data/
+reports/
+__pycache__/
+*.pyc
+*.db
+*.log
