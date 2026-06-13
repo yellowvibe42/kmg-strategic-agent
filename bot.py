@@ -6,7 +6,7 @@ bot.py — Telegram-бот КМГ.
 Запуск: python bot.py  (работает непрерывно в фоне)
 """
 
-import sys, logging, json
+import sys, logging, json, html
 from datetime import datetime, timedelta
 from pathlib import Path
 from telegram import Update, Bot
@@ -69,10 +69,10 @@ async def cmd_status(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             "<b>Оценка рисков:</b>",
         ]
         for a in alerts:
-            lines.append(f"{LEVEL_EMOJI.get(a.level,'•')} [{a.level}] {a.message}")
+            lines.append(f"{LEVEL_EMOJI.get(a.level,'•')} [{a.level}] {html.escape(a.message)}")
         await update.message.reply_text("\n".join(lines), parse_mode="HTML")
     except Exception as ex:
-        await update.message.reply_text(f"❌ Ошибка: {ex}")
+        await update.message.reply_text(f"❌ Ошибка: {html.escape(str(ex))}")
 
 # ---------------------------------------------------------------------------
 # /analyze
@@ -98,12 +98,12 @@ async def cmd_analyze(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             f"   Δ выручка: {s.revenue_delta_pct:+.1f}%",
         ]
         if s.budget_risk:
-            lines.append("\n⚠️ Стресс: дефицит бюджета РК (Brent < $75)")
+            lines.append("\n⚠️ Стресс: дефицит бюджета РК (Brent &lt; $75)")
         if s.rating_risk:
-            lines.append("⚠️ Стресс: риск снижения рейтинга S&P BBB−")
+            lines.append("⚠️ Стресс: риск снижения рейтинга S&amp;P BBB−")
         await update.message.reply_text("\n".join(lines), parse_mode="HTML")
     except Exception as ex:
-        await update.message.reply_text(f"❌ Ошибка: {ex}")
+        await update.message.reply_text(f"❌ Ошибка: {html.escape(str(ex))}")
 
 # ---------------------------------------------------------------------------
 # /news
@@ -121,10 +121,10 @@ async def cmd_news(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             return
         lines = ["📰 <b>Последние новости</b>\n"]
         for n in news:
-            lines.append(f"• [{n['source']}] {n['title'][:110]}")
+            lines.append(f"• [{html.escape(n['source'])}] {html.escape(n['title'][:110])}")
         await update.message.reply_text("\n".join(lines), parse_mode="HTML")
     except Exception as ex:
-        await update.message.reply_text(f"❌ Ошибка: {ex}")
+        await update.message.reply_text(f"❌ Ошибка: {html.escape(str(ex))}")
 
 # ---------------------------------------------------------------------------
 # /report
@@ -192,7 +192,7 @@ async def auto_update(ctx: ContextTypes.DEFAULT_TYPE):
         non_routine = [a for a in alerts if a.level != "ПЛАНОВЫЙ"]
         if non_routine:
             for a in non_routine:
-                lines.append(f"{LEVEL_EMOJI.get(a.level,'•')} [{a.level}] {a.message}")
+                lines.append(f"{LEVEL_EMOJI.get(a.level,'•')} [{a.level}] {html.escape(a.message)}")
         else:
             lines.append("✅ Параметры в норме. Базовый сценарий.")
 
